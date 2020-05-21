@@ -50,6 +50,17 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if($exception instanceof validationException){
+            return $$this->respondWithValidationError($exception);
+        }
+
         return parent::render($request, $exception);
+    }
+
+    private function respondWithValidationError($exception) {
+        return ResponseBuilder::asError(ApiCode::VALIDATION_ERROR)
+            ->withData($exception->error())
+            ->withHttpCode(422)
+            ->build();
     }
 }
